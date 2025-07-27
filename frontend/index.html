@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Tracking Calendar</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="loginScreen" class="loginScreen">
+        <div class="loginContainer">
+            <div class="loginHeader">
+                <i class="fas fa-heart"></i>
+                <h1>Lulu and Juju</h1>
+                <p>Mental Health Calendar for us to use</p>
+            </div>
+            
+            <div class="loginLinks">
+                <button id="loginLink" type="button" class="active">Login</button>
+                <button id="registerLink" type="button">Register</button>
+            </div>
+
+            <form id="loginForm" class="loginForm">
+                <h2 id="loginTitle">Login to see your Partner's mood</h2>
+                <div class="formGroup">
+                    <label for="usernameInput">Your Name</label>
+                    <input type="text" id="usernameInput" placeholder="Enter your name" required>
+                </div>
+
+                <div class="formGroup hidden" id="partnerIdGroup">
+                    <label for="partnerIdInput">Partner's Unique ID</label>
+                    <input type="text" id="partnerIdInput" placeholder="Enter ID if you are a supportive partner">
+                    <small>If you are the 'Supportive partner', get this ID from your partner.</small>
+                </div>
+                
+                <div class="formGroup">
+                    <label for="roleSelect">I am the...</label>
+                    <select id="roleSelect">
+                        <option value="">Select Role</option>
+                        <option value="owner">Poster</option>
+                        <option value="supporter">Supporter</option>
+                    </select>
+                </div>
+
+                <div class="formGroup">
+                    <label for="passwordInput">Password</label>
+                    <input type="password" id="passwordInput" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" id="loginBtn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="mainApp" class="mainApp hidden">
+        <div class="header">
+            <div class="headerContent">
+                <button id="logoutBtn" class="logoutBtn">Logout</button>
+                <div class="userInfo">
+                    Logged in as: <span id="loggedInUser"></span>
+                </div>
+                <h1>MoodSync Calendar</h1>
+                <p id="streakDisplay">Current Streak: 0 days</p>
+            </div>
+        </div>
+        <div class="calendarContainer">
+            <div class="calendarHeader">
+                <button id="prevMonthBtn" class="navBtn">&lt;</button>
+                <h2 id="currentMonthYear"></h2>
+                <button id="nextMonthBtn" class="navBtn">&gt;</button>
+            </div>
+            <div class="weekdays">
+                <div>Sun</div>
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+            </div>
+            <div id="daysContainer" class="daysContainer">
+                </div>
+        </div>
+    </div>
+
+    <div id="moodModal" class="moodModal hidden">
+        <div class="modalContent">
+            <div class="modalHeader">
+                <h3 id="modalDate"></h3>
+                <button id="closeModalBtn" class="closeBtn">&times;</button>
+            </div>
+            <div class="modalBody">
+                <div class="dropdownGroup">
+                    <label for="moodSelect">Mood:</label>
+                    <select id="moodSelect">
+                        <option value="">Select mood</option>
+                        <option value="1">Horrible</option>
+                        <option value="2">Bad</option>
+                        <option value="3">Okay</option>
+                        <option value="4">Good</option>
+                        <option value="5">Amazing</option>
+                    </select>
+                </div>
+                
+                <div class="dropdownGroup">
+                    <label for="energySelect">Energy:</label>
+                    <select id="energySelect">
+                        <option value="">Select energy level</option>
+                        <option value="1">Exhausted</option>
+                        <option value="2">Tired</option>
+                        <option value="3">Normal</option>
+                        <option value="4">Energetic</option>
+                        <option value="5">Buzzing</option>
+                    </select>
+                </div>
+                
+                <div class="dropdownGroup">
+                    <label for="anxietySelect">Anxiety:</label>
+                    <select id="anxietySelect">
+                        <option value="">Select anxiety level</option>
+                        <option value="1">Overwhelming</option>
+                        <option value="2">High</option>
+                        <option value="3">Moderate</option>
+                        <option value="4">Low</option>
+                        <option value="5">Peaceful</option>
+                    </select>
+                </div>
+                
+                <div class="dropdownGroup">
+                    <label for="sleepSelect">Sleep Quality:</label>
+                    <select id="sleepSelect">
+                        <option value="">Select sleep quality</option>
+                        <option value="1">Terrible</option>
+                        <option value="2">Poor</option>
+                        <option value="3">Fair</option>
+                        <option value="4">Good</option>
+                        <option value="5">Excellent</option>
+                    </select>
+                </div>
+
+                <div class="formGroup">
+                    <label for="journalText">Journal Entry:</label>
+                    <textarea id="journalText" placeholder="How was your day?"></textarea>
+                </div>
+
+                <div class="tagSection">
+                    <label>Tags:</label>
+                    <div id="tagsDisplay" class="tagsDisplay"></div>
+                    <div class="tagInputGroup">
+                        <input type="text" id="tagInput" placeholder="Add custom tag">
+                        <button id="addTagBtn" class="addTagBtn">+</button>
+                    </div>
+                    <div id="predefinedTags" class="predefinedTags"></div>
+                </div>
+
+                <div id="sharingSection" class="sharingSection hidden">
+                    <h4>Sharing Options</h4>
+                    <label class="checkboxLabel">
+                        <input type="checkbox" id="shareWithPartnerCheckbox">
+                        Share this entry with my partner
+                    </label>
+                </div>
+
+                <div id="commentsAndReactionsSection" class="commentsAndReactionsSection">
+                    <h4>Reactions</h4>
+                    <div id="reactionsList" class="reactionsList"></div>
+                    <div id="reactionForm" class="reactionForm hidden">
+                        <select id="reactionSelect">
+                            <option value="">Select a reaction</option>
+                            <option value="heart">❤️ Heart</option>
+                            <option value="star">⭐ Star</option>
+                            <option value="hug">🫂 Hug</option>
+                            <option value="strength">💪 Strong</option>
+                            <option value="smile">😊 Happy</option>
+                        </select>
+                        <button id="addReactionBtn" class="reactionBtn">Add Reaction</button>
+                    </div>
+                </div>
+
+                <div id="commentsSection" class="commentsSection">
+                    <h4>Supportive Comments</h4>
+                    <div id="commentsList" class="commentsList"></div>
+                    <div id="commentForm" class="commentForm hidden">
+                        <textarea id="commentText" placeholder="Leave a supportive message..."></textarea>
+                        <button id="addCommentBtn" class="commentBtn">Add Comment</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modalFooter">
+                <button id="saveEntryBtn" class="saveBtn hidden">Save Entry</button>
+                <button id="deleteEntryBtn" class="deleteBtn hidden">Delete Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="moodTracker.js"></script>
+</body>
+</html>
