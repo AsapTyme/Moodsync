@@ -13,10 +13,17 @@ const port = process.env.PORT || 5001;
 // --- Middleware ---
 app.use(express.json());
 
-// Explicitly configure CORS for your frontend's Vercel URL
-app.use(cors({
-    origin: 'https://luju-mood-calendar.vercel.app' 
-}));
+
+// More robust CORS configuration to handle preflight requests
+const corsOptions = {
+  origin: 'https://luju-mood-calendar.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200 // For legacy browser compatibility
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Enable preflight for all routes
 
 // --- Database Connection Pool ---
 const pool = new Pool({
