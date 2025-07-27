@@ -1,6 +1,6 @@
 // frontend/moodtracker.js
 
-const API_BASE_URL = 'https://moodsync-backend.vercel.app';
+const API_BASE_URL = 'https://moodsync-backend.vercel.app/api';
 
 class MoodTracker {
     constructor() {
