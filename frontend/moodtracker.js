@@ -1,5 +1,3 @@
-// frontend/moodtracker.js
-
 const API_BASE_URL = 'https://moodsync-backend.vercel.app/api';
 
 class MoodTracker {
@@ -28,6 +26,7 @@ class MoodTracker {
         const options = {
             method: method,
             headers: headers,
+            credentials: 'include'
         };
 
         if (data) {
@@ -333,7 +332,6 @@ class MoodTracker {
 
         const entry = this.moodEntries[dateKey];
 
-        // Set dropdown values based on existing entry or defaults
         document.getElementById('moodSelect').value = entry ? entry.mood : '';
         document.getElementById('energySelect').value = entry ? entry.energy : '';
         document.getElementById('anxietySelect').value = entry ? entry.anxiety : '';
@@ -406,7 +404,6 @@ class MoodTracker {
         const journalText = document.getElementById('journalText').value.trim();
         const isShared = document.getElementById('shareWithPartnerCheckbox').checked;
 
-        // Validate that all fields are selected
         if (!mood || !energy || !anxiety || !sleep) {
             alert('Please select values for all mood indicators (Mood, Energy, Anxiety, Sleep).');
             return;

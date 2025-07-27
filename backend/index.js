@@ -5,27 +5,50 @@ const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-// const bodyParser = require('body-parser'); // Removed as express.json() is used
 
 const app = express();
 const port = process.env.PORT || 5001;
 
-// --- Middleware ---
 app.use(express.json());
 
-
-// More robust CORS configuration to handle preflight requests
 const corsOptions = {
-  origin: 'https://luju-mood-calendar.vercel.app',
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      'https://luju-mood-calendar.vercel.app',
+      'http://localhost:3000',
+      'http://127.0.0.1:3000'
+    ];
+    
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  optionsSuccessStatus: 200 // For legacy browser compatibility
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization',
+    'X-Requested-With',
+    'Accept',
+    'Origin'
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200,
+  maxAge: 86400
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Enable preflight for all routes
+app.options('*', cors(corsOptions));
 
-// --- Database Connection Pool ---
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Max-Age', '86400');
+  next();
+});
+
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
@@ -42,13 +65,11 @@ pool.query('SELECT NOW()')
     .then(() => console.log('Successfully connected to Neon PostgreSQL!'))
     .catch(err => console.error('Database connection error:', err));
 
-// --- JWT Secret Key ---
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
     console.warn('WARNING: JWT_SECRET environment variable is not set. Please set a strong, random value in your .env file for production!');
 }
 
-// --- Middleware for Authentication (JWT Verification) ---
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -67,8 +88,6 @@ function authenticateToken(req, res, next) {
         next();
     });
 }
-
-// --- API Endpoints ---
 
 app.post('/api/register', async (req, res) => {
     const { username, password, role, partnerId } = req.body;
@@ -471,6 +490,16 @@ app.post('/api/mood-entries/:dateKey/reactions', authenticateToken, async (req, 
         console.error('Error adding reaction:', error);
         res.status(500).json({ message: 'Internal server error.' });
     }
+});
+
+app.use((error, req, res, next) => {
+  if (error.message === 'Not allowed by CORS') {
+    return res.status(403).json({
+      message: 'CORS policy violation',
+      origin: req.get('Origin')
+    });
+  }
+  next(error);
 });
 
 app.listen(port, () => {
